@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkNuke - The Nuclear Code Destroyer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #000000, #1a1a1a);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            max-width: 400px;
+            padding: 20px;
+            border: 2px solid #ff4500;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.8);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #ff4500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            color: #ffffff;
+            background: #ff4500;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #cc3700;
+        }
+        button:disabled {
+            background: #888888;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #00ff00;
+            word-wrap: break-word;
+        }
+        .ad-container {
+            margin-bottom: 20px;
+        }
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            font-size: 12px;
+            color: #aaaaaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LinkNuke</h1>
+        <p>The Nuclear Code Destroyer</p>
+
+        <!-- Advertisement Container -->
+        <div class="ad-container">
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXX"
+                crossorigin="anonymous"></script>
+            <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-format="fluid"
+                data-ad-layout-key="-fb+5w+4e-db+86"
+                data-ad-client="ca-pub-XXXXXXXXXXXXXXX"
+                data-ad-slot="XXXXXXXXXX"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+
+        <input type="text" id="encryptedLink" placeholder="Paste the encrypted link here" disabled>
+        <button id="decryptButton" onclick="decryptLink()" disabled>⚡ Decrypt Link ⚡</button>
+        <p id="result"></p>
+    </div>
+    <div class="footer">© 2023 LinkNuke - The Ultimate Tool for Digital Domination</div>
+
+    <script>
+        // Secret key (must match the bot's key)
+        const SECRET_KEY = new Uint8Array([/* Insert your secret key here */]);
+
+        // Alert users about responsibility
+        window.onload = () => {
+            alert("⚠️ WARNING: We are not responsible for the misuse of this tool. Use it ethically and legally.");
+
+            // Disable input and button initially
+            const input = document.getElementById('encryptedLink');
+            const button = document.getElementById('decryptButton');
+            input.disabled = true;
+            button.disabled = true;
+
+            // Show a message and enable functionality after 10 seconds
+            alert("Please wait 10 seconds while the ad loads...");
+            setTimeout(() => {
+                input.disabled = false;
+                button.disabled = false;
+                alert("Ready! You can now use LinkNuke.");
+            }, 10000); // 10 seconds
+        };
+
+        function cleanObfuscatedText(text) {
+            const humanNoise = [
+                "Amazing!", "Hmm...", "Interesting.", "Did you know?", "Incredible.", "Wait a moment..."
+            ];
+            for (const phrase of humanNoise) {
+                text = text.replace(phrase, "").trim();
+            }
+            return text;
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        async function decrypt(text) {
+            try {
+                const content = base64ToArrayBuffer(text);
+                const nonce = new Uint8Array(content.slice(0, 12));
+                const tag = new Uint8Array(content.slice(12, 28));
+                const encryptedText = new Uint8Array(content.slice(28));
+
+                const cryptoKey = await crypto.subtle.importKey(
+                    "raw",
+                    SECRET_KEY,
+                    { name: "AES-GCM" },
+                    false,
+                    ["decrypt"]
+                );
+
+                const decrypted = await crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv: nonce, tagLength: 128 },
+                    cryptoKey,
+                    encryptedText
+                );
+                const decoder = new TextDecoder();
+                return decoder.decode(decrypted);
+            } catch (error) {
+                return Promise.reject("Error decrypting the link.");
+            }
+        }
+
+        function decryptLink() {
+            const encryptedLink = document.getElementById('encryptedLink').value;
+            const cleanedText = cleanObfuscatedText(encryptedLink);
+
+            decrypt(cleanedText).then(result => {
+                document.getElementById('result').innerText = `🔗 Decrypted Link: ${result}`;
+            }).catch(error => {
+                document.getElementById('result').innerText = `❌ Error: ${error}`;
+            });
+        }
+    </script>
+</body>
+</html>
